@@ -1,12 +1,10 @@
-export type NamedAPIResourceList = {
+export interface NamedAPIResourceList {
   count: number;
   next: string | null;
   previous: string | null;
-  results: IndexedPokemon[]; 
+  results: NamedAPIResource[]; 
 }
 
-export type IndexedPokemon = {
-    id: number;
-    name: string;
-    url: string;
+export interface NamedAPIResource {
+  name: string;
 }
