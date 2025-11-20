@@ -4,6 +4,7 @@ import { injectId, listPokemons } from './services/pokeAPI';
 import { use, useEffect, useState } from 'react';
 import { IndexedPokemon, NamedAPIResourceList } from './services/pokeAPI.type';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import PokemonCard from './components/PokemonCard';
 
 export default function App() {
   const [items, setItems] = useState<IndexedPokemon[]>([]);
@@ -29,7 +30,7 @@ export default function App() {
         <FlatList
           data={items}
           renderItem={({ item }: { item: IndexedPokemon }) => (
-            <Item title={item.name} id={item.id} />
+            <PokemonCard pokemon={item} />
           )}
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={{ paddingHorizontal: 10 }}
