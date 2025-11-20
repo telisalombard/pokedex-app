@@ -1,17 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { listPokemons } from './services/pokeAPI';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { injectId, listPokemons } from './services/pokeAPI';
 import { use, useEffect, useState } from 'react';
-import { NamedAPIResourceList } from './services/pokeAPI.type';
+import { IndexedPokemon, NamedAPIResourceList } from './services/pokeAPI.type';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function App() {
-  const [items, setItems] = useState<NamedAPIResourceList>();
+  const [items, setItems] = useState<IndexedPokemon[]>([]);
   
   const loadPokemons = async () => {
     try {
       const pokemons = await listPokemons();
-      setItems(pokemons);
-      console.log(pokemons);
+      const pokemonsWithIds = injectId(pokemons.results);
+      setItems(pokemonsWithIds);
+      console.log("Successfully loaded pokemons");
     } catch (error) {
       console.error("Error loading pokemons:", error);
     }
@@ -22,24 +24,32 @@ export default function App() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      {items ? (
-        items.results.map((item, index) => (
-        <Text key={index}>{item.name}</Text>
-      ))
-      ) : (
-        <Text>Loading...</Text>
-      )}
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          data={items}
+          renderItem={({ item }: { item: IndexedPokemon }) => (
+            <Item title={item.name} id={item.id} />
+          )}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ paddingHorizontal: 10 }}
+        />
+        <StatusBar style="auto" />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
+
+const Item = ({ title, id }: { title: string; id: number }) => (
+  <View>
+    <Text>{id} {title}</Text>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginInline: 20,
   },
 });
