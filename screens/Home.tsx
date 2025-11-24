@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import { IndexedPokemon } from "../services/pokeAPI.type";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { FlatList, StyleSheet } from "react-native";
@@ -12,6 +12,7 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 
 export default function HomeScreen() {
   const [items, setItems] = useState<IndexedPokemon[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   
   const loadPokemons = async () => {
     try {
@@ -21,6 +22,8 @@ export default function HomeScreen() {
       console.log("Successfully loaded pokemons");
     } catch (error) {
       console.error("Error loading pokemons:", error);
+    } finally {
+      setLoading(false);
     }
   }
   
@@ -33,6 +36,11 @@ export default function HomeScreen() {
   return (
     <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
+          {loading ? (
+                      <View style={styles.loaderContainer}>
+                        <ActivityIndicator size="large"/>
+                      </View>
+                    ) : (
             <FlatList
             data={items}
             renderItem={({ item }: { item: IndexedPokemon }) => (
@@ -50,6 +58,7 @@ export default function HomeScreen() {
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={{ paddingHorizontal: 10 }}
             />
+          )}
             <StatusBar style="auto" />
         </SafeAreaView>
     </SafeAreaProvider>
@@ -64,5 +73,10 @@ const styles = StyleSheet.create({
   },
   text: {
     textTransform: 'capitalize',
-  }
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
