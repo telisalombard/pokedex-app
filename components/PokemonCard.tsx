@@ -1,9 +1,17 @@
-import { View, Text, StyleSheet } from "react-native";
-import { IndexedPokemon } from "../services/pokeAPI.type";
+import { View, Text, StyleSheet, StyleProp, ViewStyle } from "react-native";
 
-const PokemonCard = ({ pokemon }: { pokemon: IndexedPokemon }) => (
-  <View style={styles.card}>
-    <Text>{pokemon.id}  {pokemon.name}</Text>
+interface PokemonCardProps {
+  heading?: string;
+  subheading?: string;
+  children?: React.ReactNode; 
+  style?: StyleProp<ViewStyle>; 
+}
+
+const PokemonCard: React.FC<PokemonCardProps> = ({ heading, subheading, children, style }) => (
+  <View style={[styles.card, style]}>
+    {heading && <Text style={styles.heading}>{heading}</Text>}
+    {subheading && <Text style={styles.subheading}>{subheading}</Text>}
+    {children && <View style={styles.children}>{children}</View>}
   </View>
 );
 
@@ -14,7 +22,24 @@ const styles = StyleSheet.create({
         backgroundColor: '#d8d8d8ff',
         borderRadius: 5,
         shadowColor: '#000',
-    }
+    },
+    heading: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 5,
+        textAlign: 'center',
+        textTransform: 'uppercase',
+    },
+    subheading: {
+        fontSize: 18,
+        fontWeight: '600',
+        marginBottom: 5,
+    },
+    children: {
+        fontSize: 14,
+        padding: 5,
+        textTransform: 'capitalize',
+    },
 });
 
 export default PokemonCard;

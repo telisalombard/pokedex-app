@@ -42,7 +42,9 @@ export default function HomeScreen() {
                     navigation.navigate('PokemonDetails', { pokemonId: item.id });
                   }}
                 >
-                  <PokemonCard pokemon={item} />
+                  <PokemonCard>
+                    <Text style={styles.text}>{item.id}   {item.name}</Text>
+                  </PokemonCard>
                 </Pressable>
             )}
             keyExtractor={(item) => item.id.toString()}
@@ -54,16 +56,13 @@ export default function HomeScreen() {
   );
 }
 
-const Item = ({ title, id }: { title: string; id: number }) => (
-  <View>
-    <Text>{id} {title}</Text>
-  </View>
-);
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
     marginInline: 20,
   },
+  text: {
+    textTransform: 'capitalize',
+  }
 });
