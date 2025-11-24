@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, ScrollView } from "react-native";
+import { View, Text, FlatList, StyleSheet, ScrollView, Button, Pressable } from "react-native";
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator'; 
 import { getPokemon } from "../services/pokeAPI";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Pokemon } from "../services/pokeAPI.type";
 import PokemonCard from "../components/PokemonCard";
 
@@ -16,60 +17,73 @@ export default function PokemonDetailsScreen() {
   const [pokemon, setPokemon] = useState<Pokemon>();
   
   const loadPokemonDetails = async (pokemonId: number) => {
-      try {
-        const pokemonDetails = await getPokemon(pokemonId);
-        setPokemon(pokemonDetails);
-        console.log("Successfully loaded pokemon details for ", pokemonDetails.name);
-      } catch (error) {
-        console.error("Error loading pokemon details:", error);
-      }
+    try {
+      const pokemonDetails = await getPokemon(pokemonId);
+      setPokemon(pokemonDetails);
+      console.log("Successfully loaded pokemon details for ", pokemonDetails.name);
+    } catch (error) {
+      console.error("Error loading pokemon details:", error);
     }
+  }
     
-    useEffect(() => {
-      loadPokemonDetails(pokemonId);
-    }, []);
+  useEffect(() => {
+    loadPokemonDetails(pokemonId);
+  }, []);
+
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          
-          <PokemonCard heading={`${pokemonId}.  ${pokemon?.name} Details`}>
-          </PokemonCard>
+        <View style={{ flex: 1 }}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <PokemonCard heading={`${pokemonId}.  ${pokemon?.name} Details`} />
 
-          <PokemonCard subheading="Base Stats">
-            <Text style={styles.text}>Height: {pokemon?.height}</Text>
-            <Text style={styles.text}>Weight: {pokemon?.weight}</Text>
-            <Text style={styles.text}>Base Experience: {pokemon?.base_experience}</Text>
-          </PokemonCard>
+            <PokemonCard subheading="Base Stats">
+              <Text style={styles.text}>Height: {pokemon?.height}</Text>
+              <Text style={styles.text}>Weight: {pokemon?.weight}</Text>
+              <Text style={styles.text}>Base Experience: {pokemon?.base_experience}</Text>
+            </PokemonCard>
 
-          <PokemonCard subheading="Abilities">
-            {pokemon?.abilities.map((ability, index) => (
-              <Text key={index} style={styles.text}>{index + 1}. {ability}</Text>
-            ))}
-          </PokemonCard>
+            <PokemonCard subheading="Abilities">
+              {pokemon?.abilities.map((ability, index) => (
+                <Text key={index} style={styles.text}>
+                  {index + 1}. {ability}
+                </Text>
+              ))}
+            </PokemonCard>
 
-          <PokemonCard subheading="Forms">
-            {pokemon?.forms.map((form, index) => (
-              <Text key={index} style={styles.text}>{index + 1}. {form}</Text>
-            ))}
-          </PokemonCard>
+            <PokemonCard subheading="Forms">
+              {pokemon?.forms.map((form, index) => (
+                <Text key={index} style={styles.text}>
+                  {index + 1}. {form}
+                </Text>
+              ))}
+            </PokemonCard>
 
-          <PokemonCard subheading="Stats">
-            {pokemon?.stats.map((stat, index) => (
-              <Text key={index} style={styles.text}>
-                {index + 1}. {stat.name}: {stat.base_stat} (Effort: {stat.effort})
-              </Text>
-            ))}
-          </PokemonCard>
+            <PokemonCard subheading="Stats">
+              {pokemon?.stats.map((stat, index) => (
+                <Text key={index} style={styles.text}>
+                  {index + 1}. {stat.name}: {stat.base_stat} (Effort: {stat.effort})
+                </Text>
+              ))}
+            </PokemonCard>
 
-          <PokemonCard subheading="Types">
-            {pokemon?.types.map((type, index) => (
-              <Text key={index} style={styles.text}>{index + 1}. {type}</Text>
-            ))}
-          </PokemonCard>
+            <PokemonCard subheading="Types">
+              {pokemon?.types.map((type, index) => (
+                <Text key={index} style={styles.text}>
+                  {index + 1}. {type}
+                </Text>
+              ))}
+            </PokemonCard>
+          </ScrollView>
 
-        </ScrollView>
+          <View style={styles.buttonContainer}>
+            <Pressable onPress={() => navigation.goBack()} style={styles.buttonContainer}>
+              <Text style={styles.buttonText}>Back</Text>
+            </Pressable>
+          </View>
+        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -84,5 +98,20 @@ const styles = StyleSheet.create({
   },
   text: {
     textTransform: 'capitalize',
-  }
+  },
+  buttonContainer: {
+    marginVertical: 10,
+    backgroundColor: '#d8d8d8ff',
+    borderRadius: 20,
+    width: '70%',
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: '#000000',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    padding: 5,
+    fontSize: 18,
+  },
+
 });
